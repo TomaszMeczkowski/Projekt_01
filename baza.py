@@ -6,6 +6,13 @@ import os
 from termcolor import colored
 
 
+# Uwagi: w mysql.connector.connect potrzebuje database=.... która już będzie istnieć w MySQL Workbench
+#        (nie musi być związana z tą którą później utworzymy)
+
+#       Metody z danymi od użytkowników zostały rozbitę na odrębne metody żeby potem skupić się na walidacji danych
+#       wprowadzanych przez użytkowników (try, except, pętle itd)
+
+
 class BazaDanych:
 
     def __init__(self, user, password):
@@ -89,8 +96,27 @@ class BazaDanych:
         print("__Dodawanie nowej osoby__")
         imie = input("Podaj imię osoby trenującej:\n")
         nazwisko = input("Podaj nazwisko osoby trenującej:\n")
-        pas = input("Podaj kolor pasa (Czarny/Brązowy/Purpurowy/Niebieski/Biały):\n")
-        belki = int(input("Podaj ilość belek (0-4):\n"))
+
+        while True:
+            pas = input("Podaj kolor pasa (Czarny/Brązowy/Purpurowy/Niebieski/Biały):\n").capitalize()
+
+            pasy = ["Czarny", "Brązowy", "Purpurowy", "Niebieski", "Biały"]
+
+            if pas not in pasy:
+                print(f"\n{colored('Nie ma takiego pasa', 'red')}\n")
+
+            else:
+                break
+
+        while True:
+            try:
+                belki = int(input("Podaj ilość belek (0-4):\n"))
+                if 0 <= belki <= 4:
+                    break
+                else:
+                    print(f"\n{colored('Niewłaściwa ilość belek', 'red')}\n")
+            except ValueError:
+                print(f"\n{colored('Nieprawidłowe dane', 'red')}\n")
 
         clear_screen()
         print(f"\nWprowadzone dane:\n"
