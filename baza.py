@@ -6,6 +6,13 @@ import os
 from termcolor import colored
 
 
+# Uwagi: w mysql.connector.connect potrzebuje database=.... która już będzie istnieć w MySQL Workbench
+#        (nie musi być związana z tą którą później utworzymy)
+
+#       Metody z danymi od użytkowników zostały rozbitę na odrębne metody żeby potem skupić się na walidacji danych
+#       wprowadzanych przez użytkowników (try, except, pętle itd)
+
+
 class BazaDanych:
 
     def __init__(self, user, password):
@@ -135,12 +142,47 @@ class BazaDanych:
         db.close()
 
     def osoby_update_parametry(self):
-        id_osoby = input("Podaj id osoby której dane mają zostać zmienione:\n")
-        parametr = int(input("\nWybierz co ma zostać zmienione: "
-                             "\n1.imie "
-                             "\n2.nazwisko"
-                             "\n3.pas "
-                             "\n4.belki\n"))
+        while True:
+            try:
+                id_osoby = int(input("Podaj id osoby której dane mają zostać zmienione:\n"))
+                if type(self.dane_osobowe_imie(id_osoby)) == str:
+                    break
+                else:
+                    print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}\n")
+
+                    try:
+                        choice = int(input(f"\n1. Podaj nowe id"
+                                           f"\n0. Powrót\n"))
+                    except ValueError:
+                        choice = 1
+
+                    if choice == 1:
+                        pass
+                    else:
+                        id_osoby = False
+                        break
+
+            except ValueError:
+                print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
+                pass
+
+        if not id_osoby:
+            return False
+
+        while True:
+            try:
+                parametr = int(input("\nWybierz co ma zostać zmienione: "
+                                     "\n1.imie "
+                                     "\n2.nazwisko"
+                                     "\n3.pas "
+                                     "\n4.belki\n"))
+                if 1 <= parametr <= 4:
+                    break
+                else:
+                    pass
+
+            except ValueError:
+                pass
 
         parametr_list = ["imie", "nazwisko", "pas", "belki"]
         parametr = parametr_list[parametr - 1]
@@ -557,3 +599,6 @@ class BazaDanych:
             print(f"\nid szukanej osoby: {colored(self.id_finder(imie, nazwisko), 'blue')}")
         else:
             print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}")
+
+
+
