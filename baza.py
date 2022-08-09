@@ -80,10 +80,18 @@ class BazaDanych:
         row = "INSERT INTO karnety(id, aktywny_karnet, miesiac, typ_karnetu, dostepne_treningi_ogolnie, " \
               "pozostale_treningi_w_miesiacu) VALUES(%s,%s,%s,%s,%s,%s);"
         rowval = (id_osoby, False, 0, 0, 0, 0)
-        cursor_object.execute(row, rowval)
+
+        try:
+            cursor_object.execute(row, rowval)
+        except mysql.connector.errors.IntegrityError:
+            print(f"{colored('*Error: Taka osoba istnieje już w bazie danych*', 'red')}")
+            user_sleep()
+            db.close()
+            return False
 
         db.commit()
         db.close()
+        return True
 
     def dodawanie_osob_parametry(self):
         print("__Dodawanie nowej osoby__")
@@ -116,9 +124,9 @@ class BazaDanych:
               f"{imie}, {nazwisko}, pas: {pas}, ilość belek na pasie: {belki}")
 
         choice = int(input(f"\n1. Zatwierdzić \n2. Poprawić\n0. Menu\n"))
+
         if choice == 1:
-            self.dodawanie_osob(imie, nazwisko, pas, belki)
-            return True
+            return self.dodawanie_osob(imie, nazwisko, pas, belki)
         elif choice == 0:
             return False
         else:
@@ -448,7 +456,21 @@ class BazaDanych:
 
         while True:
             try:
-                typ = input("\nPodaj dokładny typ karnetu do zakupu:\n")
+                typ = input("\nPodaj dokładny typ karnetu do zakupu:\n").capitalize()
+
+                if typ == "1":
+                    typ = "1 Wejście"
+                elif typ == "4":
+                    typ = "4 Wejścia"
+                elif typ == "8":
+                    typ = "8 Wejść"
+                elif typ == "15":
+                    typ = "15 Wejść"
+                elif typ == "Dzieci 4-7":
+                    typ = "Dziecie 4-7 lat"
+                elif typ == "Dzieci 8-15":
+                    typ = "Dzieci 8-15 lat"
+
                 amount = karnety_men.get(typ)[0]
                 break
             except TypeError:
@@ -607,9 +629,14 @@ class BazaDanych:
         activ = bool(wynik[0][0])
         amount_left = wynik[0][1]
 
-        if activ and amount_left > 0:
+        if activ and 0 < amount_left < 900:
             print(f"{colored('Karnet jest aktywny', 'green')}"
                   f"\nPozostała ilość wejść do wykorzystania: {amount_left}")
+
+        elif activ and amount_left > 900:
+            print(f"{colored('Karnet jest aktywny', 'green')}"
+                  f"\nPozostała ilość wejść do wykorzystania: {colored('Nielimitowany dostęp', 'green')}\n")
+
         else:
             print(f"{colored('Karnet został wykorzystany', 'red')}")
 
