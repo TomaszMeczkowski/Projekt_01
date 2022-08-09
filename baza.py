@@ -1,5 +1,5 @@
 import mysql.connector
-from funkcje import clear_screen, month_converter, czas
+from funkcje import clear_screen, month_converter, czas, user_sleep
 import datetime
 import pathlib
 import os
@@ -220,11 +220,46 @@ class BazaDanych:
         db.close()
 
     def osoby_delete_parametry(self):
-        id_osoby = input("\nPodaj id osoby której dane mają zostać usunięte:\n")
+        while True:
+            try:
+                id_osoby = int(input("Podaj id osoby której dane mają zostać usunięte:\n"))
+                if type(self.dane_osobowe_imie(id_osoby)) == str:
+                    break
+                else:
+                    print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}\n")
+
+                    try:
+                        choice = int(input(f"\n1. Podaj nowe id"
+                                           f"\n0. Powrót\n"))
+                    except ValueError:
+                        choice = 1
+
+                    if choice == 1:
+                        pass
+                    else:
+                        id_osoby = False
+                        break
+
+            except ValueError:
+                print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
+                pass
+
+        if not id_osoby:
+            return False
+
         clear_screen()
         print(f"Dane osoby o id={id_osoby} zostaną usunięte z bazy")
 
-        choice = int(input(f"\n1. Zatwierdzić \n2. Poprawić\n0. Menu (porzuć zmiany)\n"))
+        while True:
+            try:
+                choice = int(input(f"\n1. Zatwierdzić \n2. Poprawić\n0. Menu (porzuć zmiany)\n"))
+                if choice in [1, 2, 0]:
+                    break
+                else:
+                    pass
+            except ValueError:
+                pass
+
         if choice == 1:
             self.osoby_delete(id_osoby)
             return True
@@ -353,7 +388,33 @@ class BazaDanych:
 
     def ticket_sell_parametry(self):
         clear_screen()
-        id_osoby = int(input("\nPodaj id osoby kupującej karnet:\n"))
+        while True:
+            try:
+                id_osoby = int(input("\nPodaj id osoby kupującej karnet:\n"))
+                if type(self.dane_osobowe_imie(id_osoby)) == str:
+                    break
+                else:
+                    print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}\n")
+
+                    try:
+                        choice = int(input(f"\n1. Podaj nowe id"
+                                           f"\n0. Powrót\n"))
+                    except ValueError:
+                        choice = 1
+
+                    if choice == 1:
+                        pass
+                    else:
+                        id_osoby = False
+                        break
+
+            except ValueError:
+                print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
+                pass
+
+        if not id_osoby:
+            return False
+
         month = month_converter(datetime.date.today().month)
         karnety_men = {"1 Wejście": [1, "30zł"],
                        "4 Wejścia": [4, "100zł"],
@@ -391,7 +452,7 @@ class BazaDanych:
                 amount = karnety_men.get(typ)[0]
                 break
             except TypeError:
-                print("\n*Błąd*")
+                print(f"\n{colored('*Error: Niewłaściwe dane*', 'red')}\n")
 
         clear_screen()
         print(f"\n___Wprowadzone dane___\n"
@@ -401,10 +462,18 @@ class BazaDanych:
               f"\nMiesiąc: {month}"
               f"\n")
 
-        choice = int(input("\n1. Zatwierdź"
-                           "\n2. Popraw"
-                           "\n"
-                           "\n0. Menu (porzuć zmiany)\n"))
+        while True:
+            try:
+                choice = int(input("\n1. Zatwierdź"
+                                   "\n2. Popraw"
+                                   "\n"
+                                   "\n0. Menu (porzuć zmiany)\n"))
+                if choice in [1, 2, 0]:
+                    break
+                else:
+                    pass
+            except ValueError:
+                pass
 
         if choice == 1:
             self.ticket_sell(id_osoby, True, month, typ, amount, sex)
@@ -486,16 +555,42 @@ class BazaDanych:
             db.commit()
             db.close()
             print(colored("\nMożna wydać kluczyk\n", "green"))
-            user_wait = input("Wprowadź dowolny znak żeby kontynuować\n")
+            user_sleep()
             return True
 
         else:
             print(colored("\nBrak aktywnego karnetu\n", "red"))
-            user_wait = input("Wprowadź dowolny znak żeby kontynuować\n")
+            user_sleep()
             return False
 
     def ticket_giveaway_parametry(self):
-        id_osoby = int(input("\nPodaj id osoby trenującej\n"))
+        while True:
+            try:
+                id_osoby = int(input("\nPodaj id osoby trenującej:\n"))
+                if type(self.dane_osobowe_imie(id_osoby)) == str:
+                    break
+                else:
+                    print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}\n")
+
+                    try:
+                        choice = int(input(f"\n1. Podaj nowe id"
+                                           f"\n0. Powrót\n"))
+                    except ValueError:
+                        choice = 1
+
+                    if choice == 1:
+                        pass
+                    else:
+                        id_osoby = False
+                        break
+
+            except ValueError:
+                print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
+                pass
+
+        if not id_osoby:
+            return False
+
         return self.ticket_giveaway(id_osoby)
 
     def ticket_check(self, id_osoby):
@@ -519,7 +614,32 @@ class BazaDanych:
             print(f"{colored('Karnet został wykorzystany', 'red')}")
 
     def ticket_check_parametry(self):
-        id_osoby = int(input("\nPodaj id osoby trenującej\n"))
+        while True:
+            try:
+                id_osoby = int(input("\nPodaj id osoby trenującej\n"))
+                if type(self.dane_osobowe_imie(id_osoby)) == str:
+                    break
+                else:
+                    print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}\n")
+
+                    try:
+                        choice = int(input(f"\n1. Podaj nowe id"
+                                           f"\n0. Powrót\n"))
+                    except ValueError:
+                        choice = 1
+
+                    if choice == 1:
+                        pass
+                    else:
+                        id_osoby = False
+                        break
+
+            except ValueError:
+                print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
+                pass
+
+        if not id_osoby:
+            return False
 
         if type(self.dane_osobowe_imie(id_osoby)) == str and type(self.dane_osobowe_naziwsko(id_osoby)):
             print(f"Właściciel karnetu: {colored(self.dane_osobowe_imie(id_osoby),'blue')} "
@@ -592,6 +712,3 @@ class BazaDanych:
             print(f"\nid szukanej osoby: {colored(self.id_finder(imie, nazwisko), 'blue')}")
         else:
             print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}")
-
-
-

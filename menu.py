@@ -1,6 +1,6 @@
 from baza import BazaDanych
-from funkcje import clear_screen
-import time
+from funkcje import clear_screen, month_converter, czas, user_sleep
+from time import sleep
 
 
 class Menu(BazaDanych):
@@ -86,12 +86,12 @@ class Menu(BazaDanych):
 
         elif choice == 3:
             self.ticket_check_parametry()
-            user_wait = input("\nWprowadź dowolny znak żeby cofnąć:\n")
+            user_sleep()
             self.menu_obsluga_klienta()
 
         elif choice == 4:
             self.id_finder_parametry()
-            user_wait = input("\nWprowadź dowolny znak żeby cofnąć:\n")
+            user_sleep()
             self.menu_obsluga_klienta()
 
         elif choice == 9:
@@ -197,9 +197,9 @@ class Menu(BazaDanych):
 
             # Aktywowanie karnetów dla załadowanych osoób pierwszych osób
             for i in range(len(osoby) + 1):
-                self.ticket_sell(i, True, "Lipiec", "Open", 999, "M/K")
+                self.ticket_sell(i, True, f"{month_converter(czas('month'))}", "Open", 999, "M/K")
 
-            time.sleep(3)
+            sleep(3)
             self.menu_glowne(mess="*Pomyślnie dodano zestaw osoób*")
 
         elif choice == 2:
@@ -207,7 +207,7 @@ class Menu(BazaDanych):
 
             for i in range(1, 4):
                 print("Restowanie bazy danych" + str(i * "."))
-                time.sleep(0.5)
+                sleep(0.8)
                 clear_screen()
 
             self.menu_glowne(mess="*Pomyślnie zresetowano baze danych*")
@@ -238,17 +238,17 @@ class Menu(BazaDanych):
         clear_screen()
         if choice == 1:
             self.show_all_people()
-            user_wait = input("\nWprowadź dowolny znak żeby cofnąć:\n")
+            user_sleep()
             self.menu_lista_osob()
 
         elif choice == 2:
             self.show_all_people_sorted_by_alf_imie()
-            user_wait = input("\nWprowadź dowolny znak żeby cofnąć:\n")
+            user_sleep()
             self.menu_lista_osob()
 
         elif choice == 3:
             self.show_all_people_sorted_by_alf_nazwisko()
-            user_wait = input("\nWprowadź dowolny znak żeby cofnąć:\n")
+            user_sleep()
             self.menu_lista_osob()
 
         elif choice == 4:

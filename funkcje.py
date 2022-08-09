@@ -12,7 +12,7 @@ def month_converter(data):
     months = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień",
               "Październik", "Listopad", "Grudzień"]
 
-    if type(data) == str:
+    if type(data) == str and data in months:
         month = months.index(data) + 1
         return month
 
@@ -27,10 +27,10 @@ def month_converter(data):
 def czas(dane):
 
     if dane == "year":
-        return datetime.date.today().year  # Type int
+        return datetime.date.today().year  # Type INT
 
     elif dane == "month":
-        return datetime.date.today().month
+        return datetime.date.today().month  # Type INT
 
     elif dane == "day":
         return datetime.date.today().day
@@ -48,3 +48,5 @@ def czas(dane):
         print("\n***Złe użycie funkcji czasu***\n")
 
 
+def user_sleep():
+    input("\nWprowadź dowolny znak żeby cofnąć:\n")
