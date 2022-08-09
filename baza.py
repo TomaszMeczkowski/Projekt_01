@@ -6,13 +6,6 @@ import os
 from termcolor import colored
 
 
-# Uwagi: w mysql.connector.connect potrzebuje database=.... która już będzie istnieć w MySQL Workbench
-#        (nie musi być związana z tą którą później utworzymy)
-
-#       Metody z danymi od użytkowników zostały rozbitę na odrębne metody żeby potem skupić się na walidacji danych
-#       wprowadzanych przez użytkowników (try, except, pętle itd)
-
-
 class BazaDanych:
 
     def __init__(self, user, password):
@@ -564,4 +557,3 @@ class BazaDanych:
             print(f"\nid szukanej osoby: {colored(self.id_finder(imie, nazwisko), 'blue')}")
         else:
             print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}")
-
