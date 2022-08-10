@@ -19,6 +19,7 @@ class Menu(BazaDanych):
         print("\n_______Menu Główne_______\n"
               "\n1. Obsługa klienta"
               "\n2. Baza danych"
+              "\n3. Statystyki"
               "\n"
               "\n9. Odśwież"
               "\n666. Development tools"
@@ -35,6 +36,10 @@ class Menu(BazaDanych):
 
         elif choice == 2:
             self.menu_baza_danych()
+            self.menu_glowne()
+
+        elif choice == 3:
+            self.menu_statystyki()
             self.menu_glowne()
 
         elif choice == 9:
@@ -73,7 +78,7 @@ class Menu(BazaDanych):
 
         clear_screen()
         if choice == 1:
-            if self.ticket_giveaway_parametry():
+            if self.key_giveaway_parametry():
                 self.menu_obsluga_klienta(mess="*Pomyślnie wydano kluczyk*")
             else:
                 self.menu_obsluga_klienta()
@@ -273,3 +278,34 @@ class Menu(BazaDanych):
 
         else:
             self.menu_lista_osob()
+
+    def menu_statystyki(self, mess=""):
+        clear_screen()
+        print(f"\n______Aplikacja Organizacyjna______"
+              f"\n{mess}")
+
+        print("\n_____Statystyki_____\n"
+              "\n1. Ilość wejść"
+              "\n"
+              "\n9. Odśwież"
+              "\n0. Menu Główne")
+
+        try:
+            choice = int(input())
+        except ValueError:
+            choice = 404
+
+        clear_screen()
+        if choice == 1:
+            self.stat_entry()
+            user_sleep()
+            self.menu_statystyki()
+
+        elif choice == 9:
+            self.menu_statystyki()
+
+        elif choice == 0:
+            pass
+
+        else:
+            self.menu_statystyki()

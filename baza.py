@@ -778,3 +778,27 @@ class BazaDanych:
 
         db.commit()
         db.close()
+
+    def stat_entry(self):
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+
+        zapytanie = f"SELECT * FROM statystyki_klubowe;"
+        cursor_object.execute(zapytanie)
+        wyniki = cursor_object.fetchall()
+        choice = True
+
+        try:
+            wyniki[0][1]
+        except IndexError:
+            print(f"{colored('Brak danych w bazie', 'red')}")
+            choice = False
+
+        db.commit()
+        db.close()
+
+        if choice:
+            print("Ilość wejść | Data")
+            for i in wyniki:
+                print(f"{i[1]}          | {i[2]} {i[3]}")
