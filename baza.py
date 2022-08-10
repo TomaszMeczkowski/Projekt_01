@@ -63,6 +63,15 @@ class BazaDanych:
 
         cursor_object.execute(creat_table_3)
 
+        creat_table_4 = "CREATE TABLE IF NOT EXISTS statystyki_klubowe" \
+                        "(id INT NOT NULL AUTO_INCREMENT," \
+                        "ilosc_wejsc INT NOT NULL," \
+                        "miesiac varchar(45) NOT NULL," \
+                        "rok INT NOT NULL," \
+                        "PRIMARY KEY (id), UNIQUE KEY id_UNIQUE (id));"
+
+        cursor_object.execute(creat_table_4)
+
         db.commit()
         db.close()
 
@@ -551,7 +560,7 @@ class BazaDanych:
                 db.commit()
                 db.close()
 
-    def ticket_giveaway(self, id_osoby):
+    def key_giveaway(self, id_osoby):
         db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
                                      database="klub_zt")
         cursor_object = db.cursor()
@@ -576,6 +585,9 @@ class BazaDanych:
             cursor_object.execute(zapytanie)
             db.commit()
             db.close()
+
+            self.statystyki_klubowe_wejscia()
+
             print(colored("\nMożna wydać kluczyk\n", "green"))
             user_sleep()
             return True
@@ -585,7 +597,7 @@ class BazaDanych:
             user_sleep()
             return False
 
-    def ticket_giveaway_parametry(self):
+    def key_giveaway_parametry(self):
         while True:
             try:
                 id_osoby = int(input("\nPodaj id osoby trenującej:\n"))
@@ -613,7 +625,7 @@ class BazaDanych:
         if not id_osoby:
             return False
 
-        return self.ticket_giveaway(id_osoby)
+        return self.key_giveaway(id_osoby)
 
     def ticket_check(self, id_osoby):
         db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
@@ -739,3 +751,30 @@ class BazaDanych:
             print(f"\nid szukanej osoby: {colored(self.id_finder(imie, nazwisko), 'blue')}")
         else:
             print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}")
+
+    def statystyki_klubowe_wejscia(self):
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+
+        month = month_converter(czas("month"))
+        year = czas("year")
+        zapytanie = f"SELECT id, ilosc_wejsc, miesiac, rok FROM statystyki_klubowe " \
+                    f"WHERE miesiac = '{month}' AND rok = {year}"
+
+        cursor_object.execute(zapytanie)
+        wyniki = cursor_object.fetchall()
+
+        if not wyniki:
+            zapytanie = f"INSERT INTO statystyki_klubowe(ilosc_wejsc, miesiac, rok) VALUES(%s, %s, %s) "
+            wartosci = (1, month, year)
+            cursor_object.execute(zapytanie, wartosci)
+
+        else:
+            id_wpisu = wyniki[0][0]
+            ilosc_wejsc = wyniki[0][1] + 1
+            zapytanie = f"UPDATE klub_zt.statystyki_klubowe SET ilosc_wejsc = {ilosc_wejsc} WHERE (id = {id_wpisu});"
+            cursor_object.execute(zapytanie)
+
+        db.commit()
+        db.close()
