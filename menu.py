@@ -285,7 +285,8 @@ class Menu(BazaDanych):
               f"\n{mess}")
 
         print("\n_____Statystyki_____\n"
-              "\n1. Ilość wejść"
+              "\n1. Ilość wejść całego klubu"
+              "\n2. Ilość wejść osoby trenującej"
               "\n"
               "\n9. Odśwież"
               "\n0. Menu Główne")
@@ -299,6 +300,10 @@ class Menu(BazaDanych):
         if choice == 1:
             self.stat_entry()
             user_sleep()
+            self.menu_statystyki()
+
+        elif choice == 2:
+            self.stat_entry_by_id_parametry()
             self.menu_statystyki()
 
         elif choice == 9:

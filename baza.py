@@ -72,6 +72,17 @@ class BazaDanych:
 
         cursor_object.execute(creat_table_4)
 
+        creat_table_5 = "CREATE TABLE IF NOT EXISTS statystyki_osobowe" \
+                        "(id INT NOT NULL AUTO_INCREMENT," \
+                        "id_osoby INT NOT NULL," \
+                        "id_rekordu INT NOT NULL," \
+                        "ilosc_wejsc INT NOT NULL," \
+                        "miesiac VARCHAR(45) NOT NULL," \
+                        "rok INT NOT NULL," \
+                        "PRIMARY KEY (id), UNIQUE KEY id_UNIQUE (id));"
+
+        cursor_object.execute(creat_table_5)
+
         db.commit()
         db.close()
 
@@ -587,6 +598,7 @@ class BazaDanych:
             db.close()
 
             self.statystyki_klubowe_wejscia()
+            self.statystyki_osobowe_wejscia(id_osoby)
 
             print(colored("\nMożna wydać kluczyk\n", "green"))
             user_sleep()
@@ -675,7 +687,6 @@ class BazaDanych:
 
             except ValueError:
                 print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
-                pass
 
         if not id_osoby:
             return False
@@ -802,3 +813,110 @@ class BazaDanych:
             print("Ilość wejść | Data")
             for i in wyniki:
                 print(f"{i[1]}          | {i[2]} {i[3]}")
+
+    def statystyki_osobowe_wejscia(self, id_osoby):
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+        zapytanie = f"SELECT * FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
+        cursor_object.execute(zapytanie)
+        wyniki = cursor_object.fetchall()
+
+        month = month_converter(czas("month"))
+        year = czas("year")
+
+        if not wyniki:
+            zapytanie = f"INSERT INTO statystyki_osobowe(id_osoby, id_rekordu, ilosc_wejsc, miesiac, rok)" \
+                        f"VALUES(%s, %s, %s, %s, %s);"
+            wartosci = (id_osoby, 1, 1, month, year)
+            cursor_object.execute(zapytanie, wartosci)
+
+        else:
+            zapytanie = f"SELECT id_rekordu, ilosc_wejsc, id FROM statystyki_osobowe " \
+                        f"WHERE miesiac = '{month}' AND rok = {year} AND id_osoby = {id_osoby} LIMIT 1;"
+            cursor_object.execute(zapytanie)
+            wyniki = cursor_object.fetchall()
+
+            zapytanie = f"SELECT id_rekordu FROM statystyki_osobowe " \
+                        f"WHERE (id_osoby = {id_osoby});"
+            cursor_object.execute(zapytanie)
+            wyniki_2 = list(cursor_object.fetchall()[0])
+            id_rekordu = max(wyniki_2)
+
+            if not wyniki:
+                zapytanie = f"INSERT INTO statystyki_osobowe(id_osoby, id_rekordu, ilosc_wejsc, miesiac, rok)" \
+                            f"VALUES(%s, %s, %s, %s, %s);"
+                id_rekordu += 1
+                wartosci = (id_osoby, id_rekordu, 1, month, year)
+                cursor_object.execute(zapytanie, wartosci)
+
+            else:
+                ilosc_wejsc = wyniki[0][1] + 1
+                id_input = wyniki[0][2]
+                zapytanie = f"UPDATE klub_zt.statystyki_osobowe SET ilosc_wejsc = {ilosc_wejsc} " \
+                            f"WHERE (id_rekordu = {id_rekordu} AND id_osoby = {id_osoby} AND id = {id_input});"
+                cursor_object.execute(zapytanie)
+
+        db.commit()
+        db.close()
+
+    def stat_entry_by_id(self, id_osoby):
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+
+        zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
+        cursor_object.execute(zapytanie)
+        wyniki = cursor_object.fetchall()
+        choice = True
+
+        try:
+            wyniki[0][1]
+        except IndexError:
+            print(f"{colored('Brak danych statystycznych dla podanego id', 'red')}")
+            choice = False
+
+        db.commit()
+        db.close()
+
+        if choice:
+            print("Ilość wejść | Data")
+            for i in wyniki:
+                print(f"{i[0]}          | {i[1]} {i[2]}")
+            user_sleep()
+
+    def stat_entry_by_id_parametry(self):
+        while True:
+            try:
+                id_osoby = int(input("\nPodaj id osoby trenującej\n"))
+                if type(self.dane_osobowe_imie(id_osoby)) == str:
+                    break
+                else:
+                    print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}\n")
+
+                    try:
+                        choice = int(input(f"\n1. Podaj nowe id"
+                                           f"\n0. Powrót\n"))
+                    except ValueError:
+                        choice = 1
+
+                    if choice == 1:
+                        pass
+                    else:
+                        id_osoby = False
+                        break
+
+            except ValueError:
+                print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
+
+        if not id_osoby:
+            return False
+
+        if type(self.dane_osobowe_imie(id_osoby)) == str and type(self.dane_osobowe_naziwsko(id_osoby)):
+            print(f"Dane użytkownika: {colored(self.dane_osobowe_imie(id_osoby),'blue')} "
+                  f"{colored(self.dane_osobowe_naziwsko(id_osoby),'blue')}\n")
+
+            self.stat_entry_by_id(id_osoby)
+
+        else:
+            print(f"{colored('Brak osoby o takim id w bazie danych','red')}")
