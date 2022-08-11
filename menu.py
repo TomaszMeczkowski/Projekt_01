@@ -182,17 +182,9 @@ class Menu(BazaDanych):
             osoby = [
                 ["Tomek", "Męczkowski", "Purpurowy", 2],
                 ["Olga", "Zabulewicz", "Purpurowy", 2],
-                ["Andrzej", "Iwat", "Czarny", 0],
                 ["Alicja", "Kardas", "Niebieski", 3],
                 ["Ola", "Warczak", "Purpurowy", 3],
-                ["Martyna", "Iwat", "Czarny", 0],
-                ["Jacek", "Sasin", "Niebieski", 2],
-                ["Iza", "Wołos", "Niebieski", 0],
-                ["Oskar", "Śleszyński", "Niebieski", 0],
-                ["Patrycja", "Pecura", "Biały", 0],
-                ["Agata", "Stach", "Brązowy", 0],
-                ["Wojtek", "Wastowstki", "Niebieski", 3],
-                ["Sandra", "Słowińska", "Purpurowy", 2]
+                ["Jacek", "Sasin", "Niebieski", 2]
                 ]
 
             # Jeżeli chcemy wiecej powtórzeń danych trzeba zmienić range(i) na większe i
