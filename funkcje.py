@@ -50,3 +50,11 @@ def czas(dane):
 
 def user_sleep():
     input("\nWprowadź dowolny znak żeby cofnąć:\n")
+
+
+def mysql_data_converter(dane):
+    data = dane.split("-")
+    year = data[0]
+    month = month_converter(int(str(int(data[1], 10))))  # Parsowanie stringa ze względu na fromaty 01,02 miesięcy
+    day = data[2]
+    return f"{day} {month} {year}"

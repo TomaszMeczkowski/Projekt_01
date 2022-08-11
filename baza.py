@@ -1,5 +1,5 @@
 import mysql.connector
-from funkcje import clear_screen, month_converter, czas, user_sleep
+from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter
 import datetime
 import pathlib
 import os
@@ -54,12 +54,11 @@ class BazaDanych:
 
         creat_table_3 = "CREATE TABLE IF NOT EXISTS dodatkowe_info_osoby" \
                         "(" \
-                        "id int NOT NULL AUTO_INCREMENT, " \
-                        "pierwszy_trening date DEFAULT NULL, " \
-                        "data_urodzenia date DEFAULT NULL, " \
-                        "laczna_ilosc_treningow int DEFAULT NULL, " \
-                        "ulubiona_technika varchar(60) DEFAULT NULL, " \
-                        "PRIMARY KEY (id), UNIQUE KEY id_UNIQUE (id))"
+                        "id_osoby int NOT NULL," \
+                        "pierwszy_trening DATE NOT NULL, " \
+                        "data_urodzenia DATE NULL, " \
+                        "PRIMARY KEY (id_osoby), " \
+                        "UNIQUE INDEX id_dodatkowe_info_osoby_UNIQUE (id_osoby ASC)VISIBLE);"
 
         cursor_object.execute(creat_table_3)
 
@@ -822,6 +821,7 @@ class BazaDanych:
         cursor_object.execute(zapytanie)
         wyniki = cursor_object.fetchall()
 
+        day = czas("day")
         month = month_converter(czas("month"))
         year = czas("year")
 
@@ -829,6 +829,13 @@ class BazaDanych:
             zapytanie = f"INSERT INTO statystyki_osobowe(id_osoby, id_rekordu, ilosc_wejsc, miesiac, rok)" \
                         f"VALUES(%s, %s, %s, %s, %s);"
             wartosci = (id_osoby, 1, 1, month, year)
+            cursor_object.execute(zapytanie, wartosci)
+
+            zapytanie = f"INSERT INTO dodatkowe_info_osoby(id_osoby, pierwszy_trening)" \
+                        f"VALUES(%s, %s);"
+            month = czas("month")
+            pierwszy_trening = f"{year}-{month}-{day}"
+            wartosci = (id_osoby, pierwszy_trening)
             cursor_object.execute(zapytanie, wartosci)
 
         else:
@@ -880,9 +887,27 @@ class BazaDanych:
         db.close()
 
         if choice:
-            print("Ilość wejść | Data")
+            print("Ilość treningów | Data")
+            counter = 0
             for i in wyniki:
-                print(f"{i[0]}          | {i[1]} {i[2]}")
+                print(f"{i[0]}              | {i[1]} {i[2]}")
+                counter += i[0]
+
+            db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                         database="klub_zt")
+            cursor_object = db.cursor()
+
+            zapytanie = f"SELECT pierwszy_trening FROM dodatkowe_info_osoby WHERE id_osoby = {id_osoby} LIMIT 1;"
+            cursor_object.execute(zapytanie)
+            first_day = str(cursor_object.fetchall()[0][0])
+            first_day = mysql_data_converter(first_day)
+
+            print(f"\nŁączna ilość treningów: {colored(str(counter), 'blue' )}")
+            print(f"Pierwszy trening: {colored(str(first_day), 'blue' )}")
+
+            db.commit()
+            db.close()
+
             user_sleep()
 
     def stat_entry_by_id_parametry(self):
@@ -913,7 +938,7 @@ class BazaDanych:
             return False
 
         if type(self.dane_osobowe_imie(id_osoby)) == str and type(self.dane_osobowe_naziwsko(id_osoby)):
-            print(f"Dane użytkownika: {colored(self.dane_osobowe_imie(id_osoby),'blue')} "
+            print(f"\n\nDane użytkownika: {colored(self.dane_osobowe_imie(id_osoby),'blue')} "
                   f"{colored(self.dane_osobowe_naziwsko(id_osoby),'blue')}\n")
 
             self.stat_entry_by_id(id_osoby)

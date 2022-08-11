@@ -205,7 +205,7 @@ class Menu(BazaDanych):
                 self.ticket_sell(i, True, f"{month_converter(czas('month'))}", "Open", 999, "M/K")
 
             sleep(3)
-            self.menu_glowne(mess="*Pomyślnie dodano zestaw osoób*")
+            self.menu_glowne(mess="*Pomyślnie dodano zestaw osób*")
 
         elif choice == 2:
             self.reset_bazy_danych()
