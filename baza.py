@@ -1,6 +1,5 @@
 import mysql.connector
 from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter
-import datetime
 import pathlib
 import os
 from termcolor import colored
@@ -442,7 +441,8 @@ class BazaDanych:
         if not id_osoby:
             return False
 
-        month = month_converter(datetime.date.today().month)
+        month = month_converter(czas("month"))
+
         karnety_men = {"1 Wejście": [1, "30zł"],
                        "4 Wejścia": [4, "100zł"],
                        "8 Wejść": [8, "140zł"],
@@ -539,7 +539,7 @@ class BazaDanych:
         for i in wyniki:
             lista_aktywnych_id.append(i[0])
 
-        current_month = month_converter(datetime.date.today().month)
+        current_month = month_converter(czas("month"))
 
         db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
                                      database="klub_zt")
