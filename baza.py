@@ -318,7 +318,7 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'cyan'))
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} Belki", 'cyan'))
         print("_" * 50)
         for i in wyniki:
             if i[1] == '':
@@ -347,7 +347,7 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'cyan'))
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} Belki", 'cyan'))
         print("_" * 50)
         for i in wyniki:
             if i[1] == '':
@@ -376,7 +376,7 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'cyan'))
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} Belki", 'cyan'))
         print("_" * 50)
         for i in wyniki:
             if i[1] == '':
