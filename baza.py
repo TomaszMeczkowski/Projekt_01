@@ -318,13 +318,13 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        print(colored(f"{'id':3s} {'Imie':11s} {'Nazwisko':17s} {'Pas':10s} belki", 'blue'))
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'blue'))
         print("_" * 50)
         for i in wyniki:
             if i[1] == '':
                 print(f"{i[0]}.")
             else:
-                print(f"{i[0]}. {i[1]:8s} |  {i[2]:12s}  |  {i[3]:8s}  |  {i[4]}")
+                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {i[3]:9s}  |  {i[4]}")
         print("_" * 50)
 
     def show_all_people_sorted_by_alf_imie(self):
@@ -335,15 +335,17 @@ class BazaDanych:
         dane = "SELECT DISTINCT id, imie, nazwisko, pas, belki FROM osoby_trenujace ORDER BY imie;"
         cursor_object.execute(dane)
         wyniki = cursor_object.fetchall()
-        print("id   imie   nazwisko   pas   belki\n")
+        db.commit()
+        db.close()
+
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'blue'))
+        print("_" * 50)
         for i in wyniki:
             if i[1] == '':
                 print(f"{i[0]}.")
             else:
-                print(f"{i[0]}. {i[1]}, {i[2]}, {i[3]}, {i[4]}")
-
-        db.commit()
-        db.close()
+                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {i[3]:9s}  |  {i[4]}")
+        print("_" * 50)
 
     def show_all_people_sorted_by_alf_nazwisko(self):
 
@@ -353,15 +355,17 @@ class BazaDanych:
         dane = "SELECT DISTINCT id, imie, nazwisko, pas, belki FROM osoby_trenujace ORDER BY nazwisko;"
         cursor_object.execute(dane)
         wyniki = cursor_object.fetchall()
-        print("id   imie   nazwisko   pas   belki\n")
+        db.commit()
+        db.close()
+
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'blue'))
+        print("_" * 50)
         for i in wyniki:
             if i[1] == '':
                 print(f"{i[0]}.")
             else:
-                print(f"{i[0]}. {i[1]}, {i[2]}, {i[3]}, {i[4]}")
-
-        db.commit()
-        db.close()
+                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {i[3]:9s}  |  {i[4]}")
+        print("_" * 50)
 
     def print_to_txt(self):
 
