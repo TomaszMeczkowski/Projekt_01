@@ -1,5 +1,5 @@
 import mysql.connector
-from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter
+from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter, color_belt_picker
 import pathlib
 import os
 from termcolor import colored
@@ -318,13 +318,22 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'blue'))
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'cyan'))
         print("_" * 50)
         for i in wyniki:
             if i[1] == '':
                 print(f"{i[0]}.")
             else:
-                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {i[3]:9s}  |  {i[4]}")
+                color_pick = color_belt_picker(i[3])
+                belt = colored(i[3], color_pick)
+
+                if i[3] == "Biały":
+                    pass
+                else:
+                    while len(belt) < 19:
+                        belt += " "
+
+                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {belt:14s}  |  {i[4]}")
         print("_" * 50)
 
     def show_all_people_sorted_by_alf_imie(self):
@@ -338,13 +347,22 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'blue'))
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'cyan'))
         print("_" * 50)
         for i in wyniki:
             if i[1] == '':
                 print(f"{i[0]}.")
             else:
-                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {i[3]:9s}  |  {i[4]}")
+                color_pick = color_belt_picker(i[3])
+                belt = colored(i[3], color_pick)
+
+                if i[3] == "Biały":
+                    pass
+                else:
+                    while len(belt) < 19:
+                        belt += " "
+
+                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {belt:14s}  |  {i[4]}")
         print("_" * 50)
 
     def show_all_people_sorted_by_alf_nazwisko(self):
@@ -358,13 +376,22 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'blue'))
+        print(colored(f"{'id':4s} {'Imie':11s} {'Nazwisko':18s} {'Pas':10s} belki", 'cyan'))
         print("_" * 50)
         for i in wyniki:
             if i[1] == '':
                 print(f"{i[0]}.")
             else:
-                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {i[3]:9s}  |  {i[4]}")
+                color_pick = color_belt_picker(i[3])
+                belt = colored(i[3], color_pick)
+
+                if i[3] == "Biały":
+                    pass
+                else:
+                    while len(belt) < 19:
+                        belt += " "
+
+                print(f"{(str(i[0]) + '.'):4s} {i[1]:8s} |  {i[2]:12s}  |  {belt:14s}  |  {i[4]}")
         print("_" * 50)
 
     def print_to_txt(self):

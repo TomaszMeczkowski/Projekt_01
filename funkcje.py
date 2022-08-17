@@ -58,3 +58,19 @@ def mysql_data_converter(dane):
     month = month_converter(int(str(int(data[1], 10))))  # Parsowanie stringa ze względu na fromaty 01,02 miesięcy
     day = data[2]
     return f"{day} {month} {year}"
+
+
+def color_belt_picker(data):
+    color_pick = None
+    if data == "Biały":
+        pass
+    elif data == "Niebieski":
+        color_pick = "blue"
+    elif data == "Purpurowy":
+        color_pick = "magenta"
+    elif data == "Brązowy":
+        color_pick = "yellow"
+    elif data == "Czarny":
+        color_pick = "white"
+
+    return color_pick
