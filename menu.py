@@ -1,5 +1,5 @@
 from baza import BazaDanych
-from funkcje import clear_screen, month_converter, czas, user_sleep
+from funkcje import clear_screen, user_sleep
 from time import sleep
 
 
@@ -167,6 +167,7 @@ class Menu(BazaDanych):
         print("\n__________Dev Tools__________\n"
               "\n1. Załaduj predefiniowane dane"
               "\n2. Reset Bazy Danych"
+              "\n3. Dane statystyczne wejść dla id = 1"
               "\n"
               "\n9. Odśwież"
               "\n0. Menu Główne")
@@ -178,25 +179,7 @@ class Menu(BazaDanych):
 
         clear_screen()
         if choice == 1:
-            print("Ładowanie osób prefediniowanych do bazy danych...")
-            osoby = [
-                ["Tomek", "Męczkowski", "Purpurowy", 2],
-                ["Olga", "Zabulewicz", "Purpurowy", 2],
-                ["Alicja", "Kardas", "Niebieski", 3],
-                ["Ola", "Warczak", "Purpurowy", 3],
-                ["Jacek", "Sasin", "Niebieski", 2]
-                ]
-
-            # Jeżeli chcemy wiecej powtórzeń danych trzeba zmienić range(i) na większe i
-            for large_data in range(1):
-                for i in range(0, len(osoby)):
-                    self.dodawanie_osob(osoby[i][0], osoby[i][1], osoby[i][2], osoby[i][3])
-
-            # Aktywowanie karnetów dla załadowanych osoób pierwszych osób
-            for i in range(len(osoby) + 1):
-                self.ticket_sell(i, True, f"{month_converter(czas('month'))}", "Open", 999, "M/K")
-
-            sleep(3)
+            self.dev_tool_osoby()
             self.menu_glowne(mess="*Pomyślnie dodano zestaw osób*")
 
         elif choice == 2:
@@ -208,6 +191,10 @@ class Menu(BazaDanych):
                 clear_screen()
 
             self.menu_glowne(mess="*Pomyślnie zresetowano baze danych*")
+
+        elif choice == 3:
+            self.dev_tool_statistics_01()
+            self.menu_glowne(mess="*Pomyślnie dodano dane*")
 
         elif choice == 9:
             self.menu_dev_tools()

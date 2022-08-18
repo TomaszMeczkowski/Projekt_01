@@ -2,7 +2,10 @@ import mysql.connector
 from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter, color_belt_picker
 import pathlib
 import os
+import numpy as np
+import matplotlib.pyplot as plt
 from termcolor import colored
+from time import sleep
 
 
 class BazaDanych:
@@ -978,3 +981,92 @@ class BazaDanych:
 
         else:
             print(f"{colored('Brak osoby o takim id w bazie danych','red')}")
+
+    def dev_tool_statistics_01(self):
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+
+        counter = 0
+        for j in range(5):
+
+            zapytanie = f"INSERT INTO dodatkowe_info_osoby(id_osoby, pierwszy_trening) VALUES(%s, %s)"
+            wartosci = (j + 1, "2022-01-01")
+            cursor_object.execute(zapytanie, wartosci)
+
+            for i in range(36):
+                id_osoby = j + 1
+                id_rekordu = i + 1
+                ilosc_wejsc = int(np.random.randint(low=1, high=150, size=1))
+
+                if i == 0:
+                    counter = 0
+
+                counter += 1
+                if counter > 12:
+                    counter = 1
+
+                miesiac = month_converter(counter)
+
+                rok = 2022  # Rok początkowy danych
+                if i == 12:
+                    rok += 1
+
+                zapytanie = f"INSERT INTO statystyki_osobowe(id_osoby, id_rekordu, ilosc_wejsc, miesiac, rok) " \
+                            f"VALUES(%s, %s, %s, %s, %s);"
+                wartosci = (id_osoby, id_rekordu, ilosc_wejsc, miesiac, rok)
+                cursor_object.execute(zapytanie, wartosci)
+
+        db.commit()
+        db.close()
+
+    def dev_tool_osoby(self):
+        print("Ładowanie osób prefediniowanych do bazy danych...")
+        osoby = [
+            ["Tomek", "Męczkowski", "Purpurowy", 2],
+            ["Olga", "Zabulewicz", "Purpurowy", 2],
+            ["Alicja", "Kardas", "Niebieski", 3],
+            ["Ola", "Warczak", "Purpurowy", 3],
+            ["Jacek", "Sasin", "Niebieski", 2],
+            ["Tomek", "Kowalski", "Czarny", 2],
+            ["Olga", "Kownacka", "Brązowy", 2],
+            ["Alicja", "Nazaruk", "Purpurowy", 3],
+            ["Ola", "Warcz", "Niebieski", 3],
+            ["Jacek", "Sass", "Biały", 2]
+        ]
+
+        # Jeżeli chcemy wiecej powtórzeń danych trzeba zmienić range(i) na większe i
+        for large_data in range(1):
+            for i in range(0, len(osoby)):
+                self.dodawanie_osob(osoby[i][0], osoby[i][1], osoby[i][2], osoby[i][3])
+
+        # Aktywowanie karnetów dla załadowanych osoób pierwszych osób
+        for i in range(len(osoby) + 1):
+            self.ticket_sell(i, True, f"{month_converter(czas('month'))}", "Open", 999, "M/K")
+
+        sleep(2)
+
+    def plot_osoba(self, id_osoby):
+        # Under Construction!!!!
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+
+        zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
+        cursor_object.execute(zapytanie)
+        wyniki = cursor_object.fetchall()
+        ilosc_wejsc = []
+        miesiace = []
+        for i in wyniki:
+            ilosc_wejsc.append(i[0])
+            miesiace.append(i[1])
+
+        ilosc_wejsc = np.array(ilosc_wejsc)
+        miesiace = np.array(miesiace)
+
+        x = np.arange(1, len(ilosc_wejsc) + 1)
+        y = ilosc_wejsc
+
+        fig, ax = plt.subplots()
+        ax.plot(x, y, linewidth=2.0)
+        plt.show()
