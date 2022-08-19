@@ -291,8 +291,9 @@ class Menu(BazaDanych):
                 user_sleep()
                 self.menu_statystyki("*Pomyślnie zapisano wykres*")
 
-            user_sleep()
-            self.menu_statystyki()
+            else:
+                user_sleep()
+                self.menu_statystyki()
 
         elif choice == 9:
             self.menu_statystyki()
