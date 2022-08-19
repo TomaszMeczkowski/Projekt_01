@@ -1045,6 +1045,36 @@ class BazaDanych:
 
         sleep(2)
 
+    def dev_tool_klub_stat(self):
+
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+
+        counter = 0
+        rok = 2016  # Rok początkowy danych
+
+        for i in range(36):
+            ilosc_wejsc = int(np.random.randint(low=0, high=31 * 60, size=1))
+
+            if i == 0:
+                counter = 0
+
+            counter += 1
+            if counter > 12:
+                counter = 1
+                rok += 1
+
+            miesiac = month_converter(counter)
+
+            zapytanie = f"INSERT INTO statystyki_klubowe(ilosc_wejsc, miesiac, rok) " \
+                        f"VALUES(%s, %s, %s);"
+            wartosci = (ilosc_wejsc, miesiac, rok)
+            cursor_object.execute(zapytanie, wartosci)
+
+        db.commit()
+        db.close()
+
     def plot_osoba(self, id_osoby):
         db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
                                      database="klub_zt")
@@ -1130,3 +1160,55 @@ class BazaDanych:
             return False
 
         return self.plot_osoba(id_osoby)
+
+    def plot_klub(self):
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                     database="klub_zt")
+        cursor_object = db.cursor()
+
+        zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_klubowe;"
+        cursor_object.execute(zapytanie)
+        wyniki = cursor_object.fetchall()
+        db.commit()
+        db.close()
+        ilosc_wejsc, daty = [], []
+
+        try:
+            wyniki[0][0]
+        except IndexError:
+            print(f"{colored('Brak danych statystycznych klubu', 'red')}")
+            return False
+
+        for i in wyniki:
+            ilosc_wejsc.append(i[0])
+            daty.append(str(month_converter(i[1])) + "-" + str(i[2]))
+
+        x = np.array(daty)
+        y = np.array(ilosc_wejsc)
+
+        fig, ax = plt.subplots()
+        ax.plot(x, y, linewidth=2.0)
+        ax.set(xlabel="Data", ylabel="Ilość treningów", title=f"Aktywność klubowiczów")
+        fig.autofmt_xdate()
+
+        day = czas('day')
+        month = month_converter(czas('month'))
+        year = czas('year')
+        fig.text(0.8, 0.02, f"Data wydruku: {day} {month} {year}", ha='center',
+                 fontweight='light', fontsize='x-small')
+        ax.grid()
+
+        script_path = pathlib.Path(__file__).parent.resolve()
+        path = os.path.join(script_path, "Wydruki", "Aktywnosc_klubu")
+
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+
+        fig.savefig(rf"{path}/aktywnosc_klubu.png")
+
+        print(f"\n{colored('Wykres został zapisany na dysku', 'green')}\n")
+        plt.show()
+
+        return True

@@ -168,6 +168,7 @@ class Menu(BazaDanych):
               "\n1. Załaduj predefiniowane dane"
               "\n2. Reset Bazy Danych"
               "\n3. Dane statystyczne wejść dla id = 1-5"
+              "\n4. Dane stat. klubu"
               "\n"
               "\n9. Odśwież"
               "\n0. Menu Główne")
@@ -194,6 +195,10 @@ class Menu(BazaDanych):
 
         elif choice == 3:
             self.dev_tool_statistics_01()
+            self.menu_glowne(mess="*Pomyślnie dodano dane*")
+
+        elif choice == 4:
+            self.dev_tool_klub_stat()
             self.menu_glowne(mess="*Pomyślnie dodano dane*")
 
         elif choice == 9:
@@ -267,6 +272,7 @@ class Menu(BazaDanych):
               "\n1. Ilość wejść całego klubu"
               "\n2. Ilość wejść osoby trenującej"
               "\n3. Wykresy (osobowe by id)"
+              "\n4. Wykres aktywności klubu"
               "\n"
               "\n9. Odśwież"
               "\n0. Menu Główne")
@@ -289,6 +295,13 @@ class Menu(BazaDanych):
         elif choice == 3:
             if self.plot_osoba_parametry():
                 self.menu_statystyki("*Pomyślnie zapisano wykres*")
+
+            else:
+                self.menu_statystyki()
+
+        elif choice == 4:
+            if self.plot_klub():
+                self.menu_statystyki(mess="*Pomyślnie zapisano wykres*")
 
             else:
                 self.menu_statystyki()
