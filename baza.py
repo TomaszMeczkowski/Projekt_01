@@ -1047,7 +1047,7 @@ class BazaDanych:
         sleep(2)
 
     def plot_osoba(self, id_osoby):
-        db = mysql.connector.connect(user='root', password='Torex123kt', host='127.0.0.1', port=3306,
+        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
                                      database="klub_zt")
         cursor_object = db.cursor()
 
