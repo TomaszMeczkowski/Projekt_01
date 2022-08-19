@@ -167,7 +167,7 @@ class Menu(BazaDanych):
         print("\n__________Dev Tools__________\n"
               "\n1. Załaduj predefiniowane dane"
               "\n2. Reset Bazy Danych"
-              "\n3. Dane statystyczne wejść dla id = 1"
+              "\n3. Dane statystyczne wejść dla id = 1-5"
               "\n"
               "\n9. Odśwież"
               "\n0. Menu Główne")
@@ -288,11 +288,9 @@ class Menu(BazaDanych):
 
         elif choice == 3:
             if self.plot_osoba_parametry():
-                user_sleep()
                 self.menu_statystyki("*Pomyślnie zapisano wykres*")
 
             else:
-                user_sleep()
                 self.menu_statystyki()
 
         elif choice == 9:

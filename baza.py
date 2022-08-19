@@ -166,7 +166,7 @@ class BazaDanych:
     def osoby_update_parametry(self):
         while True:
             try:
-                id_osoby = int(input("Podaj id osoby której dane mają zostać zmienione:\n"))
+                id_osoby = int(input("\nPodaj id osoby której dane mają zostać zmienione:\n"))
                 if type(self.dane_osobowe_imie(id_osoby)) == str:
                     break
                 else:
@@ -251,7 +251,7 @@ class BazaDanych:
     def osoby_delete_parametry(self):
         while True:
             try:
-                id_osoby = int(input("Podaj id osoby której dane mają zostać usunięte:\n"))
+                id_osoby = int(input("\nPodaj id osoby której dane mają zostać usunięte:\n"))
                 if type(self.dane_osobowe_imie(id_osoby)) == str:
                     break
                 else:
@@ -988,6 +988,8 @@ class BazaDanych:
         cursor_object = db.cursor()
 
         counter = 0
+        rok = 2016  # Rok początkowy danych
+
         for j in range(5):
 
             zapytanie = f"INSERT INTO dodatkowe_info_osoby(id_osoby, pierwszy_trening) VALUES(%s, %s)"
@@ -997,7 +999,7 @@ class BazaDanych:
             for i in range(36):
                 id_osoby = j + 1
                 id_rekordu = i + 1
-                ilosc_wejsc = int(np.random.randint(low=1, high=150, size=1))
+                ilosc_wejsc = int(np.random.randint(low=0, high=31, size=1))
 
                 if i == 0:
                     counter = 0
@@ -1005,12 +1007,9 @@ class BazaDanych:
                 counter += 1
                 if counter > 12:
                     counter = 1
+                    rok += 1
 
                 miesiac = month_converter(counter)
-
-                rok = 2022  # Rok początkowy danych
-                if i == 12:
-                    rok += 1
 
                 zapytanie = f"INSERT INTO statystyki_osobowe(id_osoby, id_rekordu, ilosc_wejsc, miesiac, rok) " \
                             f"VALUES(%s, %s, %s, %s, %s);"
@@ -1056,27 +1055,34 @@ class BazaDanych:
         wyniki = cursor_object.fetchall()
         db.commit()
         db.close()
-        ilosc_wejsc, miesiace = [], []
+        ilosc_wejsc, daty = [], []
 
         try:
             wyniki[0][0]
         except IndexError:
             print(f"{colored('Brak danych statystycznych dla podanego id', 'red')}")
+            user_sleep()
             return False
 
         for i in wyniki:
             ilosc_wejsc.append(i[0])
-            miesiace.append(i[1])
+            daty.append(str(month_converter(i[1])) + "-" + str(i[2]))
 
         ilosc_wejsc = np.array(ilosc_wejsc)
-        # miesiace = np.array(miesiace)
 
-        x = np.arange(1, len(ilosc_wejsc) + 1)
-        y = ilosc_wejsc
+        x = np.array(daty)
+        y = np.array(ilosc_wejsc)
 
         fig, ax = plt.subplots()
         ax.plot(x, y, linewidth=2.0)
-        ax.set(xlabel="Data", ylabel="Aktywność", title=f"Ilość wejść użytkownika o id ={id_osoby}")
+        ax.set(xlabel="Data", ylabel="Ilość treningów", title=f"Aktywność użytkownika o id = {id_osoby}")
+        fig.autofmt_xdate()
+
+        day = czas('day')
+        month = month_converter(czas('month'))
+        year = czas('year')
+        fig.text(0.8, 0.02, f"Data wydruku: {day} {month} {year}", ha='center',
+                 fontweight='light', fontsize='x-small')
         ax.grid()
 
         script_path = pathlib.Path(__file__).parent.resolve()
@@ -1092,12 +1098,13 @@ class BazaDanych:
         print(f"\n{colored('Wykres został zapisany na dysku', 'green')}\n")
         plt.show()
 
+        user_sleep()
         return True
 
     def plot_osoba_parametry(self):
         while True:
             try:
-                id_osoby = int(input("Podaj id osoby której dane mają zostać zmienione:\n"))
+                id_osoby = int(input("\nPodaj id osoby której aktywność zostanie pokazana na wykresie:\n"))
                 if type(self.dane_osobowe_imie(id_osoby)) == str:
                     break
                 else:
