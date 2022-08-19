@@ -266,6 +266,7 @@ class Menu(BazaDanych):
         print("\n_____Statystyki_____\n"
               "\n1. Ilość wejść całego klubu"
               "\n2. Ilość wejść osoby trenującej"
+              "\n3. Wykresy (osobowe by id)"
               "\n"
               "\n9. Odśwież"
               "\n0. Menu Główne")
@@ -283,6 +284,14 @@ class Menu(BazaDanych):
 
         elif choice == 2:
             self.stat_entry_by_id_parametry()
+            self.menu_statystyki()
+
+        elif choice == 3:
+            if self.plot_osoba_parametry():
+                user_sleep()
+                self.menu_statystyki("*Pomyślnie zapisano wykres*")
+
+            user_sleep()
             self.menu_statystyki()
 
         elif choice == 9:

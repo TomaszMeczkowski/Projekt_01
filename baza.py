@@ -1047,26 +1047,79 @@ class BazaDanych:
         sleep(2)
 
     def plot_osoba(self, id_osoby):
-        # Under Construction!!!!
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+        db = mysql.connector.connect(user='root', password='Torex123kt', host='127.0.0.1', port=3306,
                                      database="klub_zt")
         cursor_object = db.cursor()
 
         zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
         cursor_object.execute(zapytanie)
         wyniki = cursor_object.fetchall()
-        ilosc_wejsc = []
-        miesiace = []
+        db.commit()
+        db.close()
+        ilosc_wejsc, miesiace = [], []
+
+        try:
+            wyniki[0][0]
+        except IndexError:
+            print(f"{colored('Brak danych statystycznych dla podanego id', 'red')}")
+            return False
+
         for i in wyniki:
             ilosc_wejsc.append(i[0])
             miesiace.append(i[1])
 
         ilosc_wejsc = np.array(ilosc_wejsc)
-        miesiace = np.array(miesiace)
+        # miesiace = np.array(miesiace)
 
         x = np.arange(1, len(ilosc_wejsc) + 1)
         y = ilosc_wejsc
 
         fig, ax = plt.subplots()
         ax.plot(x, y, linewidth=2.0)
+        ax.set(xlabel="Data", ylabel="Aktywność", title=f"Ilość wejść użytkownika o id ={id_osoby}")
+        ax.grid()
+
+        script_path = pathlib.Path(__file__).parent.resolve()
+        path = os.path.join(script_path, "Wydruki", "Aktywnosc_personalnie")
+
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+
+        fig.savefig(rf"{path}/aktywnosc_osoby_id = {id_osoby}.png")
+
+        print(f"\n{colored('Wykres został zapisany na dysku', 'green')}\n")
         plt.show()
+
+        return True
+
+    def plot_osoba_parametry(self):
+        while True:
+            try:
+                id_osoby = int(input("Podaj id osoby której dane mają zostać zmienione:\n"))
+                if type(self.dane_osobowe_imie(id_osoby)) == str:
+                    break
+                else:
+                    print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}\n")
+
+                    try:
+                        choice = int(input(f"\n1. Podaj nowe id"
+                                           f"\n0. Powrót\n"))
+                    except ValueError:
+                        choice = 1
+
+                    if choice == 1:
+                        pass
+                    else:
+                        id_osoby = False
+                        break
+
+            except ValueError:
+                print(f"{colored('*Error: Niewłaściwe dane*', 'red')}\n")
+                pass
+
+        if not id_osoby:
+            return False
+
+        return self.plot_osoba(id_osoby)
