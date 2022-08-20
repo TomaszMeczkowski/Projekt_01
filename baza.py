@@ -9,7 +9,6 @@ from termcolor import colored
 from time import sleep
 
 
-
 class BazaDanych:
 
     def __init__(self, user, password):
