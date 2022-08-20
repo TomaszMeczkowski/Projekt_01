@@ -87,23 +87,27 @@ class BazaDanych:
         db.commit()
         db.close()
 
-    def dodawanie_osob(self, imie, naziwsko, pas, belki):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
-        cursor_object = db.cursor()
-        row = "INSERT INTO osoby_trenujace(imie, nazwisko, pas, belki) VALUES(%s,%s,%s,%s)"
-        rowval = (imie, naziwsko, pas, belki)
-        cursor_object.execute(row, rowval)
+    def data_base_connector(self):
+        databse_connector = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                                    database="klub_zt")
+        return databse_connector
 
-        row = f"SELECT id FROM osoby_trenujace WHERE imie = '{imie}' AND nazwisko = '{naziwsko}';"
-        cursor_object.execute(row)
+    def dodawanie_osob(self, imie, naziwsko, pas, belki):
+        db = self.data_base_connector()
+        cursor_object = db.cursor()
+        zapytanie = "INSERT INTO osoby_trenujace(imie, nazwisko, pas, belki) VALUES(%s,%s,%s,%s)"
+        wartosci = (imie, naziwsko, pas, belki)
+        cursor_object.execute(zapytanie, wartosci)
+
+        zapytanie = f"SELECT id FROM osoby_trenujace WHERE imie = '{imie}' AND nazwisko = '{naziwsko}';"
+        cursor_object.execute(zapytanie)
         id_osoby = cursor_object.fetchall()[0][0]
-        row = "INSERT INTO karnety(id, aktywny_karnet, miesiac, typ_karnetu, dostepne_treningi_ogolnie, " \
-              "pozostale_treningi_w_miesiacu) VALUES(%s,%s,%s,%s,%s,%s);"
-        rowval = (id_osoby, False, 0, 0, 0, 0)
+        zapytanie = "INSERT INTO karnety(id, aktywny_karnet, miesiac, typ_karnetu, dostepne_treningi_ogolnie, " \
+                    "pozostale_treningi_w_miesiacu) VALUES(%s,%s,%s,%s,%s,%s);"
+        wartosci = (id_osoby, False, 0, 0, 0, 0)
 
         try:
-            cursor_object.execute(row, rowval)
+            cursor_object.execute(zapytanie, wartosci)
         except mysql.connector.errors.IntegrityError:
             print(f"{colored('*Error: Taka osoba istnieje już w bazie danych*', 'red')}")
             user_sleep()
@@ -155,11 +159,10 @@ class BazaDanych:
             return self.dodawanie_osob_parametry()
 
     def osoby_update(self, parametr, docelowa_wart, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
-        row = f"UPDATE klub_zt.osoby_trenujace SET {parametr} = '{docelowa_wart}' WHERE (id = {id_osoby});"
-        cursor_object.execute(row)
+        zapytanie = f"UPDATE klub_zt.osoby_trenujace SET {parametr} = '{docelowa_wart}' WHERE (id = {id_osoby});"
+        cursor_object.execute(zapytanie)
         db.commit()
         db.close()
 
@@ -238,13 +241,12 @@ class BazaDanych:
             return self.osoby_update_parametry()
 
     def osoby_delete(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
-        row = f"UPDATE klub_zt.osoby_trenujace SET imie = '', nazwisko = '', pas = '', belki = 0 " \
-              f"WHERE (id = '{id_osoby}');"
+        zapytanie = f"UPDATE klub_zt.osoby_trenujace SET imie = '', nazwisko = '', pas = '', belki = 0 " \
+                    f"WHERE (id = '{id_osoby}');"
 
-        cursor_object.execute(row)
+        cursor_object.execute(zapytanie)
         db.commit()
         db.close()
 
@@ -298,12 +300,11 @@ class BazaDanych:
             return self.osoby_delete_parametry()
 
     def reset_bazy_danych(self):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
-        row = f"DROP DATABASE IF EXISTS klub_zt;"
+        zapytanie = f"DROP DATABASE IF EXISTS klub_zt;"
 
-        cursor_object.execute(row)
+        cursor_object.execute(zapytanie)
         db.commit()
         db.close()
 
@@ -312,8 +313,7 @@ class BazaDanych:
 
     def show_all_people(self):
 
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         dane = "SELECT * FROM osoby_trenujace;"
         cursor_object.execute(dane)
@@ -341,8 +341,7 @@ class BazaDanych:
 
     def show_all_people_sorted_by_alf_imie(self):
 
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         dane = "SELECT DISTINCT id, imie, nazwisko, pas, belki FROM osoby_trenujace ORDER BY imie;"
         cursor_object.execute(dane)
@@ -370,8 +369,7 @@ class BazaDanych:
 
     def show_all_people_sorted_by_alf_nazwisko(self):
 
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         dane = "SELECT DISTINCT id, imie, nazwisko, pas, belki FROM osoby_trenujace ORDER BY nazwisko;"
         cursor_object.execute(dane)
@@ -399,8 +397,7 @@ class BazaDanych:
 
     def print_to_txt(self):
 
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         dane = "SELECT * FROM osoby_trenujace;"
         cursor_object.execute(dane)
@@ -438,8 +435,7 @@ class BazaDanych:
         os.system(rf"{path}/Lista_osób_trenujących.txt")
 
     def ticket_sell(self, id_osoby, active, month, typ, amount, plec):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         zapytanie = f"UPDATE klub_zt.karnety SET aktywny_karnet = {active}, miesiac = '{month}', " \
                     f"typ_karnetu = '{typ}', dostepne_treningi_ogolnie = '{amount}'," \
@@ -561,8 +557,7 @@ class BazaDanych:
             return self.ticket_sell_parametry()
 
     def auto_ticket_month_check(self):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         zapytanie = f"SELECT id FROM karnety WHERE aktywny_karnet = 1;"
@@ -577,8 +572,7 @@ class BazaDanych:
 
         current_month = month_converter(czas("month"))
 
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         zapytanie = f"SELECT miesiac FROM karnety WHERE aktywny_karnet = 1 LIMIT 1;"
@@ -596,8 +590,7 @@ class BazaDanych:
             pass
         else:
             for i in lista_aktywnych_id:
-                db = mysql.connector.connect(user="root", password="Torex123kt", host='127.0.0.1', port=3306,
-                                             database="klub_zt")
+                db = self.data_base_connector()
                 cursor_object = db.cursor()
                 zapytanie = f"UPDATE klub_zt.karnety SET aktywny_karnet = {False}, miesiac = '{current_month}' " \
                             f"WHERE (id = {i});"
@@ -607,8 +600,7 @@ class BazaDanych:
                 db.close()
 
     def key_giveaway(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         zapytanie = f"SELECT aktywny_karnet, dostepne_treningi_ogolnie, pozostale_treningi_w_miesiacu " \
                     f"FROM karnety WHERE id = {id_osoby};"
@@ -623,8 +615,7 @@ class BazaDanych:
             active = False
 
         if active:
-            db = mysql.connector.connect(user="root", password='Torex123kt', host='127.0.0.1', port=3306,
-                                         database="klub_zt")
+            db = self.data_base_connector()
             cursor_object = db.cursor()
             zapytanie = f"UPDATE klub_zt.karnety SET pozostale_treningi_w_miesiacu = {amount_left} " \
                         f"WHERE id = {id_osoby};"
@@ -675,8 +666,7 @@ class BazaDanych:
         return self.key_giveaway(id_osoby)
 
     def ticket_check(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         zapytanie = f"SELECT aktywny_karnet, pozostale_treningi_w_miesiacu " \
                     f"FROM karnety WHERE id = {id_osoby};"
@@ -727,17 +717,16 @@ class BazaDanych:
             return False
 
         if type(self.dane_osobowe_imie(id_osoby)) == str and type(self.dane_osobowe_naziwsko(id_osoby)):
-            print(f"Właściciel karnetu: {colored(self.dane_osobowe_imie(id_osoby),'blue')} "
-                  f"{colored(self.dane_osobowe_naziwsko(id_osoby),'blue')}\n")
+            print(f"Właściciel karnetu: {colored(self.dane_osobowe_imie(id_osoby), 'blue')} "
+                  f"{colored(self.dane_osobowe_naziwsko(id_osoby), 'blue')}\n")
 
             return self.ticket_check(id_osoby)
 
         else:
-            print(f"{colored('Brak osoby o takim id w bazie danych','red')}")
+            print(f"{colored('Brak osoby o takim id w bazie danych', 'red')}")
 
     def dane_osobowe_imie(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         zapytanie = f"SELECT imie FROM osoby_trenujace WHERE id = {id_osoby} LIMIT 1"
         cursor_object.execute(zapytanie)
@@ -753,8 +742,7 @@ class BazaDanych:
         return imie
 
     def dane_osobowe_naziwsko(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         zapytanie = f"SELECT nazwisko FROM osoby_trenujace WHERE id = {id_osoby} LIMIT 1"
         cursor_object.execute(zapytanie)
@@ -770,8 +758,7 @@ class BazaDanych:
         return nazwisko
 
     def id_finder(self, imie, nazwisko):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         zapytanie = f"SELECT id FROM osoby_trenujace WHERE imie = '{imie}' AND nazwisko = '{nazwisko}'"
         cursor_object.execute(zapytanie)
@@ -799,8 +786,7 @@ class BazaDanych:
             print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}")
 
     def statystyki_klubowe_wejscia(self):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         month = month_converter(czas("month"))
@@ -826,8 +812,7 @@ class BazaDanych:
         db.close()
 
     def stat_entry(self):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         zapytanie = f"SELECT * FROM statystyki_klubowe;"
@@ -850,8 +835,7 @@ class BazaDanych:
                 print(f"{i[1]}          | {i[2]} {i[3]}")
 
     def statystyki_osobowe_wejscia(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
         zapytanie = f"SELECT * FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
         cursor_object.execute(zapytanie)
@@ -904,8 +888,7 @@ class BazaDanych:
         db.close()
 
     def stat_entry_by_id(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
@@ -929,8 +912,7 @@ class BazaDanych:
                 print(f"{i[0]}              | {i[1]} {i[2]}")
                 counter += i[0]
 
-            db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                         database="klub_zt")
+            db = self.data_base_connector()
             cursor_object = db.cursor()
 
             zapytanie = f"SELECT pierwszy_trening FROM dodatkowe_info_osoby WHERE id_osoby = {id_osoby} LIMIT 1;"
@@ -938,8 +920,8 @@ class BazaDanych:
             first_day = str(cursor_object.fetchall()[0][0])
             first_day = mysql_data_converter(first_day)
 
-            print(f"\nŁączna ilość treningów: {colored(str(counter), 'blue' )}")
-            print(f"Pierwszy trening: {colored(str(first_day), 'blue' )}")
+            print(f"\nŁączna ilość treningów: {colored(str(counter), 'blue')}")
+            print(f"Pierwszy trening: {colored(str(first_day), 'blue')}")
 
             db.commit()
             db.close()
@@ -974,17 +956,16 @@ class BazaDanych:
             return False
 
         if type(self.dane_osobowe_imie(id_osoby)) == str and type(self.dane_osobowe_naziwsko(id_osoby)):
-            print(f"\n\nDane użytkownika: {colored(self.dane_osobowe_imie(id_osoby),'blue')} "
-                  f"{colored(self.dane_osobowe_naziwsko(id_osoby),'blue')}\n")
+            print(f"\n\nDane użytkownika: {colored(self.dane_osobowe_imie(id_osoby), 'blue')} "
+                  f"{colored(self.dane_osobowe_naziwsko(id_osoby), 'blue')}\n")
 
             self.stat_entry_by_id(id_osoby)
 
         else:
-            print(f"{colored('Brak osoby o takim id w bazie danych','red')}")
+            print(f"{colored('Brak osoby o takim id w bazie danych', 'red')}")
 
     def dev_tool_statistics_01(self):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         counter = 0
@@ -1028,10 +1009,10 @@ class BazaDanych:
             ["Ola", "Warczak", "Purpurowy", 3],
             ["Jacek", "Sasin", "Niebieski", 2],
             ["Tomek", "Kowalski", "Czarny", 2],
-            ["Olga", "Kownacka", "Brązowy", 2],
+            ["Olga", "Kownacka", "Brązowy", 4],
             ["Alicja", "Nazaruk", "Purpurowy", 3],
             ["Ola", "Warcz", "Niebieski", 3],
-            ["Jacek", "Sass", "Biały", 2]
+            ["Jacek", "Sass", "Biały", 1]
         ]
 
         # Jeżeli chcemy wiecej powtórzeń danych trzeba zmienić range(i) na większe i
@@ -1047,8 +1028,7 @@ class BazaDanych:
 
     def dev_tool_klub_stat(self):
 
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         counter = 0
@@ -1076,8 +1056,7 @@ class BazaDanych:
         db.close()
 
     def plot_osoba(self, id_osoby):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
@@ -1162,8 +1141,7 @@ class BazaDanych:
         return self.plot_osoba(id_osoby)
 
     def plot_klub(self):
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
+        db = self.data_base_connector()
         cursor_object = db.cursor()
 
         zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_klubowe;"
