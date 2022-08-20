@@ -1,8 +1,8 @@
 import mysql.connector
 from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter, color_belt_picker, \
                     data_for_user
-import pathlib
-import os
+from pathlib import Path
+from os import mkdir, makedirs, path, system
 import numpy as np
 import matplotlib.pyplot as plt
 from termcolor import colored
@@ -401,11 +401,11 @@ class BazaDanych:
         day, month, year = data_for_user()
         hour, minutes = czas("hour"), czas("min")
 
-        script_path = pathlib.Path(__file__).parent.resolve()
-        path = os.path.join(script_path, "Wydruki")
+        script_path = Path(__file__).parent.resolve()
+        path_dir = path.join(script_path, "Wydruki")
 
         try:
-            os.mkdir(path)
+            mkdir(path_dir)
         except FileExistsError:
             pass
 
@@ -422,7 +422,7 @@ class BazaDanych:
 
         file.close()
 
-        os.system(rf"{path}/Lista_osób_trenujących.txt")
+        system(rf"{path_dir}/Lista_osób_trenujących.txt")
 
     def ticket_sell(self, id_osoby, active, month, typ, amount, plec):
         db, cursor_object = self.data_base_connector()
@@ -1061,15 +1061,15 @@ class BazaDanych:
                  fontweight='light', fontsize='x-small')
         ax.grid()
 
-        script_path = pathlib.Path(__file__).parent.resolve()
-        path = os.path.join(script_path, "Wydruki", "Aktywnosc_personalnie")
+        script_path = Path(__file__).parent.resolve()
+        path_dir = path.join(script_path, "Wydruki", "Aktywnosc_personalnie")
 
         try:
-            os.makedirs(path)
+            makedirs(path_dir)
         except FileExistsError:
             pass
 
-        fig.savefig(rf"{path}/aktywnosc_osoby_id = {id_osoby}.png")
+        fig.savefig(rf"{path_dir}/aktywnosc_osoby_id = {id_osoby}.png")
 
         print(f"\n{colored('Wykres został zapisany na dysku', 'green')}\n")
         plt.show()
@@ -1141,15 +1141,15 @@ class BazaDanych:
                  fontweight='light', fontsize='x-small')
         ax.grid()
 
-        script_path = pathlib.Path(__file__).parent.resolve()
-        path = os.path.join(script_path, "Wydruki", "Aktywnosc_klubu")
+        script_path = Path(__file__).parent.resolve()
+        path_dir = path.join(script_path, "Wydruki", "Aktywnosc_klubu")
 
         try:
-            os.makedirs(path)
+            makedirs(path_dir)
         except FileExistsError:
             pass
 
-        fig.savefig(rf"{path}/aktywnosc_klubu.png")
+        fig.savefig(rf"{path_dir}/aktywnosc_klubu.png")
 
         print(f"\n{colored('Wykres został zapisany na dysku', 'green')}\n")
         plt.show()
