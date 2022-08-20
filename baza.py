@@ -1054,7 +1054,7 @@ class BazaDanych:
         counter = 0
         rok = 2016  # Rok początkowy danych
 
-        for i in range(36):
+        for i in range(12):
             ilosc_wejsc = int(np.random.randint(low=0, high=31 * 60, size=1))
 
             if i == 0:
@@ -1171,13 +1171,14 @@ class BazaDanych:
         wyniki = cursor_object.fetchall()
         db.commit()
         db.close()
-        ilosc_wejsc, daty = [], []
 
         try:
             wyniki[0][0]
         except IndexError:
             print(f"{colored('Brak danych statystycznych klubu', 'red')}")
             return False
+
+        ilosc_wejsc, daty = [], []
 
         for i in wyniki:
             ilosc_wejsc.append(i[0])
@@ -1188,7 +1189,7 @@ class BazaDanych:
 
         fig, ax = plt.subplots()
         ax.plot(x, y, linewidth=2.0)
-        ax.set(xlabel="Data", ylabel="Ilość treningów", title=f"Aktywność klubowiczów")
+        ax.set(xlabel="Data", ylabel="Ilość wejść na sale", title=f"Aktywność klubowiczów")
         fig.autofmt_xdate()
 
         day = czas('day')
