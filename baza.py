@@ -90,11 +90,11 @@ class BazaDanych:
     def data_base_connector(self):
         databse_connector = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
                                                     database="klub_zt")
-        return databse_connector
+        cursor_object_db = databse_connector.cursor()
+        return databse_connector, cursor_object_db
 
     def dodawanie_osob(self, imie, naziwsko, pas, belki):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = "INSERT INTO osoby_trenujace(imie, nazwisko, pas, belki) VALUES(%s,%s,%s,%s)"
         wartosci = (imie, naziwsko, pas, belki)
         cursor_object.execute(zapytanie, wartosci)
@@ -159,8 +159,7 @@ class BazaDanych:
             return self.dodawanie_osob_parametry()
 
     def osoby_update(self, parametr, docelowa_wart, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"UPDATE klub_zt.osoby_trenujace SET {parametr} = '{docelowa_wart}' WHERE (id = {id_osoby});"
         cursor_object.execute(zapytanie)
         db.commit()
@@ -214,9 +213,8 @@ class BazaDanych:
 
         docelowa_wart = input("\nPodaj poprawne dane: \n")
 
-        db = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
-                                     database="klub_zt")
-        cursor_object = db.cursor()
+        db, cursor_object = mysql.connector.connect(user=self.user, password=self.password, host='127.0.0.1', port=3306,
+                                                    database="klub_zt")
         dane = f"SELECT {parametr} FROM osoby_trenujace WHERE (id = {id_osoby});"
         cursor_object.execute(dane)
         wynik = cursor_object.fetchall()
@@ -241,8 +239,7 @@ class BazaDanych:
             return self.osoby_update_parametry()
 
     def osoby_delete(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"UPDATE klub_zt.osoby_trenujace SET imie = '', nazwisko = '', pas = '', belki = 0 " \
                     f"WHERE (id = '{id_osoby}');"
 
@@ -300,8 +297,7 @@ class BazaDanych:
             return self.osoby_delete_parametry()
 
     def reset_bazy_danych(self):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"DROP DATABASE IF EXISTS klub_zt;"
 
         cursor_object.execute(zapytanie)
@@ -313,8 +309,7 @@ class BazaDanych:
 
     def show_all_people(self):
 
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         dane = "SELECT * FROM osoby_trenujace;"
         cursor_object.execute(dane)
         wyniki = cursor_object.fetchall()
@@ -341,8 +336,7 @@ class BazaDanych:
 
     def show_all_people_sorted_by_alf_imie(self):
 
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         dane = "SELECT DISTINCT id, imie, nazwisko, pas, belki FROM osoby_trenujace ORDER BY imie;"
         cursor_object.execute(dane)
         wyniki = cursor_object.fetchall()
@@ -369,8 +363,7 @@ class BazaDanych:
 
     def show_all_people_sorted_by_alf_nazwisko(self):
 
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         dane = "SELECT DISTINCT id, imie, nazwisko, pas, belki FROM osoby_trenujace ORDER BY nazwisko;"
         cursor_object.execute(dane)
         wyniki = cursor_object.fetchall()
@@ -397,8 +390,7 @@ class BazaDanych:
 
     def print_to_txt(self):
 
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         dane = "SELECT * FROM osoby_trenujace;"
         cursor_object.execute(dane)
         wyniki = cursor_object.fetchall()
@@ -435,8 +427,7 @@ class BazaDanych:
         os.system(rf"{path}/Lista_osób_trenujących.txt")
 
     def ticket_sell(self, id_osoby, active, month, typ, amount, plec):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"UPDATE klub_zt.karnety SET aktywny_karnet = {active}, miesiac = '{month}', " \
                     f"typ_karnetu = '{typ}', dostepne_treningi_ogolnie = '{amount}'," \
                     f" pozostale_treningi_w_miesiacu = '{amount}', plec = '{plec}' WHERE (id = {id_osoby});"
@@ -557,8 +548,7 @@ class BazaDanych:
             return self.ticket_sell_parametry()
 
     def auto_ticket_month_check(self):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         zapytanie = f"SELECT id FROM karnety WHERE aktywny_karnet = 1;"
         cursor_object.execute(zapytanie)
@@ -572,8 +562,7 @@ class BazaDanych:
 
         current_month = month_converter(czas("month"))
 
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         zapytanie = f"SELECT miesiac FROM karnety WHERE aktywny_karnet = 1 LIMIT 1;"
         cursor_object.execute(zapytanie)
@@ -590,8 +579,7 @@ class BazaDanych:
             pass
         else:
             for i in lista_aktywnych_id:
-                db = self.data_base_connector()
-                cursor_object = db.cursor()
+                db, cursor_object = self.data_base_connector()
                 zapytanie = f"UPDATE klub_zt.karnety SET aktywny_karnet = {False}, miesiac = '{current_month}' " \
                             f"WHERE (id = {i});"
 
@@ -600,8 +588,7 @@ class BazaDanych:
                 db.close()
 
     def key_giveaway(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"SELECT aktywny_karnet, dostepne_treningi_ogolnie, pozostale_treningi_w_miesiacu " \
                     f"FROM karnety WHERE id = {id_osoby};"
         cursor_object.execute(zapytanie)
@@ -615,8 +602,7 @@ class BazaDanych:
             active = False
 
         if active:
-            db = self.data_base_connector()
-            cursor_object = db.cursor()
+            db, cursor_object = self.data_base_connector()
             zapytanie = f"UPDATE klub_zt.karnety SET pozostale_treningi_w_miesiacu = {amount_left} " \
                         f"WHERE id = {id_osoby};"
             cursor_object.execute(zapytanie)
@@ -666,8 +652,7 @@ class BazaDanych:
         return self.key_giveaway(id_osoby)
 
     def ticket_check(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"SELECT aktywny_karnet, pozostale_treningi_w_miesiacu " \
                     f"FROM karnety WHERE id = {id_osoby};"
         cursor_object.execute(zapytanie)
@@ -726,8 +711,7 @@ class BazaDanych:
             print(f"{colored('Brak osoby o takim id w bazie danych', 'red')}")
 
     def dane_osobowe_imie(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"SELECT imie FROM osoby_trenujace WHERE id = {id_osoby} LIMIT 1"
         cursor_object.execute(zapytanie)
         dane_osobowe = cursor_object.fetchall()
@@ -742,8 +726,7 @@ class BazaDanych:
         return imie
 
     def dane_osobowe_naziwsko(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"SELECT nazwisko FROM osoby_trenujace WHERE id = {id_osoby} LIMIT 1"
         cursor_object.execute(zapytanie)
         dane_osobowe = cursor_object.fetchall()
@@ -758,8 +741,7 @@ class BazaDanych:
         return nazwisko
 
     def id_finder(self, imie, nazwisko):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"SELECT id FROM osoby_trenujace WHERE imie = '{imie}' AND nazwisko = '{nazwisko}'"
         cursor_object.execute(zapytanie)
         wynik = cursor_object.fetchall()
@@ -786,8 +768,7 @@ class BazaDanych:
             print(f"\n{colored('Brak takiej osoby w bazie danych', 'red')}")
 
     def statystyki_klubowe_wejscia(self):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         month = month_converter(czas("month"))
         year = czas("year")
@@ -812,8 +793,7 @@ class BazaDanych:
         db.close()
 
     def stat_entry(self):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         zapytanie = f"SELECT * FROM statystyki_klubowe;"
         cursor_object.execute(zapytanie)
@@ -835,8 +815,7 @@ class BazaDanych:
                 print(f"{i[1]}          | {i[2]} {i[3]}")
 
     def statystyki_osobowe_wejscia(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
         zapytanie = f"SELECT * FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
         cursor_object.execute(zapytanie)
         wyniki = cursor_object.fetchall()
@@ -888,8 +867,7 @@ class BazaDanych:
         db.close()
 
     def stat_entry_by_id(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
         cursor_object.execute(zapytanie)
@@ -912,8 +890,7 @@ class BazaDanych:
                 print(f"{i[0]}              | {i[1]} {i[2]}")
                 counter += i[0]
 
-            db = self.data_base_connector()
-            cursor_object = db.cursor()
+            db, cursor_object = self.data_base_connector()
 
             zapytanie = f"SELECT pierwszy_trening FROM dodatkowe_info_osoby WHERE id_osoby = {id_osoby} LIMIT 1;"
             cursor_object.execute(zapytanie)
@@ -965,8 +942,7 @@ class BazaDanych:
             print(f"{colored('Brak osoby o takim id w bazie danych', 'red')}")
 
     def dev_tool_statistics_01(self):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         counter = 0
         rok = 2016  # Rok początkowy danych
@@ -1028,8 +1004,7 @@ class BazaDanych:
 
     def dev_tool_klub_stat(self):
 
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         counter = 0
         rok = 2016  # Rok początkowy danych
@@ -1056,8 +1031,7 @@ class BazaDanych:
         db.close()
 
     def plot_osoba(self, id_osoby):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_osobowe WHERE id_osoby = {id_osoby};"
         cursor_object.execute(zapytanie)
@@ -1141,8 +1115,7 @@ class BazaDanych:
         return self.plot_osoba(id_osoby)
 
     def plot_klub(self):
-        db = self.data_base_connector()
-        cursor_object = db.cursor()
+        db, cursor_object = self.data_base_connector()
 
         zapytanie = f"SELECT ilosc_wejsc, miesiac, rok FROM statystyki_klubowe;"
         cursor_object.execute(zapytanie)
