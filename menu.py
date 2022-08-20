@@ -165,7 +165,7 @@ class Menu(BazaDanych):
               f"\n{mess}")
 
         print("\n__________Dev Tools__________\n"
-              "\n1. Załaduj predefiniowane dane"
+              "\n1. Załaduj predefiniowane dane osób"
               "\n2. Reset Bazy Danych"
               "\n3. Dane statystyczne wejść dla id = 1-5"
               "\n4. Dane stat. klubu"
@@ -242,6 +242,7 @@ class Menu(BazaDanych):
 
         elif choice == 4:
             print("\n1. Wydruk w formacie .txt"
+                  "\n2. Wydruk w formacie .xlsx (Excel)"
                   "\n"
                   "\n0. Powrót")
             try:
@@ -252,6 +253,11 @@ class Menu(BazaDanych):
             if choice == 1:
                 self.print_to_txt()
                 clear_screen()
+
+            elif choice == 2:
+                self.print_to_excel()
+                clear_screen()
+
             else:
                 pass
 
