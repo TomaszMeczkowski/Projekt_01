@@ -74,3 +74,8 @@ def color_belt_picker(data):
         color_pick = "white"
 
     return color_pick
+
+
+def data_for_user():
+    day_now, month_now, year_now = czas('day'), month_converter(czas('month')), czas('year')
+    return day_now, month_now, year_now

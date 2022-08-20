@@ -1,11 +1,13 @@
 import mysql.connector
-from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter, color_belt_picker
+from funkcje import clear_screen, month_converter, czas, user_sleep, mysql_data_converter, color_belt_picker, \
+                    data_for_user
 import pathlib
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 from termcolor import colored
 from time import sleep
+
 
 
 class BazaDanych:
@@ -397,11 +399,8 @@ class BazaDanych:
         db.commit()
         db.close()
 
-        year = czas("year")
-        month = month_converter(czas("month"))
-        day = czas("day")
-        hour = czas("hour")
-        minutes = czas("min")
+        day, month, year = data_for_user()
+        hour, minutes = czas("hour"), czas("min")
 
         script_path = pathlib.Path(__file__).parent.resolve()
         path = os.path.join(script_path, "Wydruki")
@@ -820,9 +819,7 @@ class BazaDanych:
         cursor_object.execute(zapytanie)
         wyniki = cursor_object.fetchall()
 
-        day = czas("day")
-        month = month_converter(czas("month"))
-        year = czas("year")
+        day, month, year = data_for_user()
 
         if not wyniki:
             zapytanie = f"INSERT INTO statystyki_osobowe(id_osoby, id_rekordu, ilosc_wejsc, miesiac, rok)" \
@@ -1053,17 +1050,14 @@ class BazaDanych:
 
         ilosc_wejsc = np.array(ilosc_wejsc)
 
-        x = np.array(daty)
-        y = np.array(ilosc_wejsc)
+        x, y = np.array(daty), np.array(ilosc_wejsc)
 
         fig, ax = plt.subplots()
         ax.plot(x, y, linewidth=2.0)
         ax.set(xlabel="Data", ylabel="Ilość treningów", title=f"Aktywność użytkownika o id = {id_osoby}")
         fig.autofmt_xdate()
 
-        day = czas('day')
-        month = month_converter(czas('month'))
-        year = czas('year')
+        day, month, year = data_for_user()
         fig.text(0.8, 0.02, f"Data wydruku: {day} {month} {year}", ha='center',
                  fontweight='light', fontsize='x-small')
         ax.grid()
@@ -1143,9 +1137,7 @@ class BazaDanych:
         ax.set(xlabel="Data", ylabel="Ilość wejść na sale", title=f"Aktywność klubowiczów")
         fig.autofmt_xdate()
 
-        day = czas('day')
-        month = month_converter(czas('month'))
-        year = czas('year')
+        day, month, year = data_for_user()
         fig.text(0.8, 0.02, f"Data wydruku: {day} {month} {year}", ha='center',
                  fontweight='light', fontsize='x-small')
         ax.grid()
