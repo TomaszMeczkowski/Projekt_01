@@ -903,7 +903,7 @@ class BazaDanych:
             print("Ilość treningów | Data")
             counter = 0
             for i in wyniki:
-                print(f"{i[0]}              | {i[1]} {i[2]}")
+                print(f" {' ':3s}  {str(i[0]):9s} | {i[1]} {i[2]}")
                 counter += i[0]
 
             db, cursor_object = self.data_base_connector()
