@@ -440,7 +440,12 @@ class BazaDanych:
             pass
 
         lista_np = np.array(lista_osob)
-        df = pd.DataFrame(lista_np, index=None, columns=["id", "imie", "nazwisko", "pas", "belki"])
+        try:
+            df = pd.DataFrame(lista_np, index=None, columns=["id", "Imie", "Nazwisko", "Pas", "Belki"])
+        except ValueError:
+            pusta_lista = [["Brak Danych"], []]
+            df = pd.DataFrame(pusta_lista, index=None, columns=["None"])
+
         df.to_excel("Wydruki/Lista_osób_trenujących.xlsx", sheet_name="Wydruk", engine="openpyxl", index=False)
         system(rf"{path_dir}/Lista_osób_trenujących.xlsx")
 
