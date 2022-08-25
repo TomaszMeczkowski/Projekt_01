@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from termcolor import colored
 from time import sleep
 import pandas as pd
+import xlsxwriter
 
 
 class BazaDanych:
@@ -93,13 +94,13 @@ class BazaDanych:
         db.commit()
         db.close()
 
-    def dodawanie_osob(self, imie, naziwsko, pas, belki):
+    def dodawanie_osob(self, imie, nazwisko, pas, belki):
         db, cursor_object = self.data_base_connector()
         zapytanie = "INSERT INTO osoby_trenujace(imie, nazwisko, pas, belki) VALUES(%s,%s,%s,%s)"
-        wartosci = (imie, naziwsko, pas, belki)
+        wartosci = (imie, nazwisko, pas, belki)
         cursor_object.execute(zapytanie, wartosci)
 
-        zapytanie = f"SELECT id FROM osoby_trenujace WHERE imie = '{imie}' AND nazwisko = '{naziwsko}';"
+        zapytanie = f"SELECT id FROM osoby_trenujace WHERE imie = '{imie}' AND nazwisko = '{nazwisko}';"
         cursor_object.execute(zapytanie)
         id_osoby = cursor_object.fetchall()[0][0]
         zapytanie = "INSERT INTO karnety(id, aktywny_karnet, miesiac, typ_karnetu, dostepne_treningi_ogolnie, " \
@@ -433,20 +434,38 @@ class BazaDanych:
 
         script_path = Path(__file__).parent.resolve()
         path_dir = path.join(script_path, "Wydruki")
+        lista_id, lista_imion, lista_nazwisk, lista_pasow, lista_belek = [], [], [], [], []
+
+        for i in lista_osob:
+            lista_id.append(i[0])
+            lista_imion.append(i[1])
+            lista_nazwisk.append(i[2])
+            lista_pasow.append(i[3])
+            lista_belek.append(i[4])
 
         try:
             mkdir(path_dir)
         except FileExistsError:
             pass
 
-        lista_np = np.array(lista_osob)
-        try:
-            df = pd.DataFrame(lista_np, index=None, columns=["id", "Imie", "Nazwisko", "Pas", "Belki"])
-        except ValueError:
-            pusta_lista = [["Brak Danych"], []]
-            df = pd.DataFrame(pusta_lista, index=None, columns=["None"])
+        df = pd.DataFrame({'id': lista_id,
+                           "Imie": lista_imion,
+                           "Nazwisko": lista_nazwisk,
+                           "Pas": lista_pasow,
+                           "Belki": lista_belek})
+        writer = pd.ExcelWriter('Wydruki/Lista_osób_trenujących.xlsx', engine='xlsxwriter')
+        df.to_excel(writer, sheet_name='Wydruk', index=False)
 
-        df.to_excel("Wydruki/Lista_osób_trenujących.xlsx", sheet_name="Wydruk", engine="openpyxl", index=False)
+        worksheet = writer.sheets['Wydruk']
+        format1 = writer.book.add_format({'align': "center"})
+
+        worksheet.set_column(0, 0, 5, format1)
+        worksheet.set_column(1, 1, 10, format1)
+        worksheet.set_column(2, 2, 15, format1)
+        worksheet.set_column(3, 3, 15, format1)
+        worksheet.set_column(4, 4, 8, format1)
+
+        writer.close()
         system(rf"{path_dir}/Lista_osób_trenujących.xlsx")
 
     def ticket_sell(self, id_osoby, active, month, typ, amount, plec):
