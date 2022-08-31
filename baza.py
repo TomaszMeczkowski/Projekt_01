@@ -9,6 +9,8 @@ from termcolor import colored
 from time import sleep
 import pandas as pd
 import xlsxwriter
+from faker import Faker
+from random import choice, randint
 
 
 class BazaDanych:
@@ -1018,18 +1020,30 @@ class BazaDanych:
 
     def dev_tool_osoby(self):
         print("Ładowanie osób prefediniowanych do bazy danych...")
-        osoby = [
-            ["Tomek", "Męczkowski", "Purpurowy", 2],
-            ["Olga", "Zabulewicz", "Purpurowy", 2],
-            ["Alicja", "Kardas", "Niebieski", 3],
-            ["Ola", "Warczak", "Purpurowy", 3],
-            ["Jacek", "Sasin", "Niebieski", 2],
-            ["Tomek", "Kowalski", "Czarny", 2],
-            ["Olga", "Kownacka", "Brązowy", 4],
-            ["Alicja", "Nazaruk", "Purpurowy", 3],
-            ["Ola", "Warcz", "Niebieski", 3],
-            ["Jacek", "Sass", "Biały", 1]
-        ]
+        # osoby = [
+        #     ["Tomek", "Męczkowski", "Purpurowy", 2],
+        #     ["Olga", "Zabulewicz", "Purpurowy", 2],
+        #     ["Alicja", "Kardas", "Niebieski", 3],
+        #     ["Ola", "Warczak", "Purpurowy", 3],
+        #     ["Jacek", "Sasin", "Niebieski", 2],
+        #     ["Tomek", "Kowalski", "Czarny", 2],
+        #     ["Olga", "Kownacka", "Brązowy", 4],
+        #     ["Alicja", "Nazaruk", "Purpurowy", 3],
+        #     ["Ola", "Warcz", "Niebieski", 3],
+        #     ["Jacek", "Sass", "Biały", 1]
+        # ]
+
+        fake_data = Faker(["pl_PL"])
+        pasy = ["Czarny", "Brązowy", "Purpurowy", "Niebieski", "Biały"]
+        osoby = []
+
+        for i in range(100):
+            imie = fake_data.name().split()[0]
+            nazwisko = fake_data.name().split()[1]
+            pas = choice(pasy)
+            belki = randint(0, 4)
+            osoba = [imie, nazwisko, pas, belki]
+            osoby.append(osoba)
 
         # Jeżeli chcemy wiecej powtórzeń danych trzeba zmienić range(i) na większe i
         for large_data in range(1):
