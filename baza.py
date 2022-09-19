@@ -1020,18 +1020,6 @@ class BazaDanych:
 
     def dev_tool_osoby(self):
         print("Ładowanie osób prefediniowanych do bazy danych...")
-        # osoby = [
-        #     ["Tomek", "Męczkowski", "Purpurowy", 2],
-        #     ["Olga", "Zabulewicz", "Purpurowy", 2],
-        #     ["Alicja", "Kardas", "Niebieski", 3],
-        #     ["Ola", "Warczak", "Purpurowy", 3],
-        #     ["Jacek", "Sasin", "Niebieski", 2],
-        #     ["Tomek", "Kowalski", "Czarny", 2],
-        #     ["Olga", "Kownacka", "Brązowy", 4],
-        #     ["Alicja", "Nazaruk", "Purpurowy", 3],
-        #     ["Ola", "Warcz", "Niebieski", 3],
-        #     ["Jacek", "Sass", "Biały", 1]
-        # ]
 
         fake_data = Faker(["pl_PL"])
         pasy = ["Czarny", "Brązowy", "Purpurowy", "Niebieski", "Biały"]
